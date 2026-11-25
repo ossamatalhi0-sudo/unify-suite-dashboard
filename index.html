@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNIFY SUITE — Command & Operations Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 18% 0%, #1b163a 0%, #0b0d19 46%, #070811 100%);
+      color: #E2E8F0;
+      min-height: 100vh;
+    }
+    .suite-shell {
+      background: rgba(15, 18, 34, 0.96);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+    }
+    .top-bar {
+      background: rgba(18, 22, 43, 0.98);
+      border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #22d3ee 100%);
+    }
+    .nav-btn { transition: all 0.15s ease; }
+    .nav-btn:hover { background: rgba(30, 41, 59, 0.7); }
+    .nav-btn-active {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+    .search-input {
+      background: #1b203c;
+      border: 1px solid rgba(71, 85, 105, 0.8);
+    }
+    .search-input:focus { border-color: #818cf8; }
+    .ai-strip {
+      background: linear-gradient(90deg, rgba(79, 70, 229, 0.25) 0%, rgba(15, 118, 110, 0.22) 50%, rgba(79, 70, 229, 0.25) 100%);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+    .module-card {
+      background: linear-gradient(180deg, rgba(23, 27, 49, 0.94) 0%, rgba(16, 19, 36, 0.98) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      transition: all 0.2s ease;
+    }
+    .module-focused {
+      border-color: rgba(34, 211, 238, 0.8) !important;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5), 0 14px 36px rgba(79, 70, 229, 0.28);
+    }
+    .module-dimmed { opacity: 0.42; }
+    .sub-box {
+      background: #111529;
+      border: 1px solid rgba(30, 41, 59, 0.95);
+    }
+    .call-insight {
+      background: rgba(30, 27, 75, 0.48);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .fulfillment-fill {
+      background: linear-gradient(90deg, #6366f1 0%, #22d3ee 55%, #34d399 100%);
+    }
+    .aura-panel {
+      background: linear-gradient(180deg, #4f46e5 0%, #3730a3 28%, #162a3a 65%, #111827 100%);
+      border: 1px solid rgba(129, 140, 248, 0.38);
+    }
+    .aura-avatar-ring {
+      background: linear-gradient(135deg, #38bdf8, #a855f7, #ec4899);
+      padding: 2px;
+      border-radius: 9999px;
+    }
+    .act-btn {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="p-2 sm:p-4 lg:p-5 antialiased selection:bg-indigo-500 selection:text-white">
+
+  <div class="suite-shell max-w-[1680px] mx-auto rounded-2xl overflow-hidden">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-bar px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3.5 flex-wrap">
+        <div class="flex items-center gap-2 pr-1">
+          <div class="brand-badge w-7 h-7 rounded-lg flex items-center justify-center font-extrabold text-xs text-white">U</div>
+          <span class="font-extrabold text-xs tracking-wider uppercase text-white">UNIFY SUITE</span>
+        </div>
+
+        <nav id="topNav" class="flex items-center gap-1 text-[11px] font-semibold flex-wrap">
+          <button type="button" data-tab="Dashboard" class="nav-btn nav-btn-active px-3 py-1 rounded-md">Dashboard</button>
+          <button type="button" data-tab="Hiring" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">Hiring</button>
+          <button type="button" data-tab="CRM" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">CRM</button>
+          <button type="button" data-tab="Support" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">Support</button>
+          <button type="button" data-tab="Analytics" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">Analytics</button>
+          <button type="button" data-tab="Social" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">Social</button>
+          <button type="button" data-tab="Storefront" class="nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white">Storefront</button>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="relative">
+          <input id="globalSearch" type="text" placeholder="Search" class="search-input w-36 sm:w-44 pl-7 pr-3 py-1 rounded-lg text-[11px] text-white placeholder-slate-400 focus:outline-none" />
+          <span class="absolute left-2.5 top-1.5 text-[10px] text-slate-400">🔍</span>
+        </div>
+        <button type="button" onclick="openAddTicket()" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-400/40 text-[11px] font-semibold text-indigo-200">+ Add Ticket</button>
+        <button type="button" onclick="openDataModal()" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/40 text-[10px] font-semibold text-cyan-200">Show Data</button>
+        <button type="button" onclick="resetAll()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[10px] font-semibold text-slate-300">Reset</button>
+        <div class="flex items-center gap-1.5 pl-1">
+          <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-500 flex items-center justify-center text-[10px] font-bold text-slate-950">A</div>
+          <span class="text-[11px] font-medium text-slate-200">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- AI Insights Strip -->
+    <div class="ai-strip px-4 py-1.5 flex items-center justify-between text-[11px]">
+      <div class="flex items-center gap-2 truncate">
+        <span class="text-cyan-300 font-bold shrink-0">⚡ AI Insights:</span>
+        <span class="text-slate-200 truncate">
+          Q3 Revenue <strong class="text-emerald-400">+18%</strong>, Customer Satisfaction <strong class="text-cyan-300">92%</strong>, Pipeline Health: <strong class="text-emerald-300">Strong</strong>
+        </span>
+      </div>
+      <span id="activeViewLabel" class="hidden sm:inline text-[10px] text-cyan-300 font-semibold">View: Dashboard</span>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="p-3 sm:p-4 grid grid-cols-1 xl:grid-cols-12 gap-3.5">
+
+      <!-- 6 Core Modules -->
+      <div class="xl:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-3.5">
+
+        <!-- 1. Hiring Pipeline -->
+        <section id="mod-Hiring" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">Hiring Pipeline</h2>
+            <span class="text-[10px] text-slate-400">5 Stages</span>
+          </div>
+          <div id="hiringGrid" class="grid grid-cols-5 gap-1"></div>
+          <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-800/80">
+            <span class="text-[10px] text-slate-400">Application Trend</span>
+            <div style="width:160px;height:44px;position:relative;"><canvas id="chartHiring"></canvas></div>
+          </div>
+        </section>
+
+        <!-- 2. CRM Deal Board -->
+        <section id="mod-CRM" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">CRM Deal Board</h2>
+            <span class="text-[10px] text-emerald-400 font-semibold">+18% vs Target</span>
+          </div>
+          <div id="crmCounters" class="grid grid-cols-5 gap-1 text-center"></div>
+          <div class="grid grid-cols-12 gap-2 items-center pt-1">
+            <div class="col-span-4 space-y-1.5">
+              <div class="sub-box rounded-lg p-2">
+                <p class="text-[8.5px] text-slate-400">Total Pipeline</p>
+                <p class="text-sm font-extrabold text-white mt-0.5">$2.4M</p>
+              </div>
+              <div class="sub-box rounded-lg p-2">
+                <p class="text-[8.5px] text-slate-400">Win Rate</p>
+                <p class="text-sm font-extrabold text-emerald-400 mt-0.5">34%</p>
+              </div>
+            </div>
+            <div class="col-span-4 sub-box rounded-lg p-2 flex flex-col items-center justify-center">
+              <div style="width:82px;height:82px;position:relative;"><canvas id="chartGoal"></canvas></div>
+              <p class="text-[10px] font-bold text-white mt-1">$500K</p>
+              <p class="text-[8.5px] text-slate-400">Monthly Goal</p>
+            </div>
+            <div class="col-span-4 sub-box rounded-lg p-2">
+              <p class="text-[8.5px] text-slate-400 mb-1">Deals by Stage</p>
+              <div style="width:100%;height:96px;position:relative;"><canvas id="chartDeals"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Support Tickets -->
+        <section id="mod-Support" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">Support Tickets</h2>
+            <div class="flex items-center gap-2 text-[10px]">
+              <span class="text-rose-400">● High</span>
+              <span class="text-amber-300">● Medium</span>
+              <span class="text-emerald-400">● Low</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <div class="col-span-8 overflow-x-auto">
+              <table class="w-full text-left border-collapse text-[9.5px]">
+                <thead>
+                  <tr class="text-slate-400 border-b border-slate-800">
+                    <th class="pb-1">ID</th>
+                    <th class="pb-1">Customer</th>
+                    <th class="pb-1">Status</th>
+                    <th class="pb-1 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsBody" class="divide-y divide-slate-800/70"></tbody>
+              </table>
+            </div>
+            <div class="col-span-4 sub-box rounded-lg p-2 flex flex-col items-center justify-center">
+              <p class="text-[8.5px] text-slate-400 mb-1 text-center">By Category</p>
+              <div style="width:82px;height:82px;position:relative;"><canvas id="chartTickets"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Voice Call Analytics -->
+        <section id="mod-Analytics" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">Voice Call Analytics</h2>
+            <span class="text-[10px] text-cyan-300">Live Sentiment</span>
+          </div>
+          <div class="sub-box rounded-lg p-2">
+            <div style="width:100%;height:56px;position:relative;"><canvas id="chartWave"></canvas></div>
+          </div>
+          <div class="call-insight rounded-lg p-2 text-[10px] text-slate-200">
+            <span class="text-cyan-300 font-semibold">AI Call Recommendation:</span> Follow up with <strong class="text-white">TechCorp</strong> lead in CRM; engagement score reached <strong class="text-emerald-400">8.5/10</strong>.
+          </div>
+          <div class="grid grid-cols-3 gap-2 items-center text-[10px]">
+            <div class="sub-box rounded-lg p-2">
+              <p class="text-[8.5px] text-slate-400">Avg Duration</p>
+              <p class="text-xs font-extrabold text-white mt-0.5">4:32</p>
+            </div>
+            <div class="sub-box rounded-lg p-2">
+              <p class="text-[8.5px] text-slate-400">Satisfaction</p>
+              <p class="text-xs font-extrabold text-emerald-400 mt-0.5">8.5/10</p>
+            </div>
+            <div style="width:100%;height:46px;position:relative;"><canvas id="chartCall"></canvas></div>
+          </div>
+        </section>
+
+        <!-- 5. Social Media Scheduler -->
+        <section id="mod-Social" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">Social Media Scheduler</h2>
+            <span class="text-[10px] text-slate-400">Calendar 2026</span>
+          </div>
+          <div class="grid grid-cols-12 gap-2.5">
+            <div class="col-span-7 sub-box rounded-lg p-2 space-y-1.5 text-[9px]">
+              <div class="grid grid-cols-7 text-center text-slate-400 font-semibold border-b border-slate-800 pb-1">
+                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+              </div>
+              <div class="space-y-1.5 pt-1">
+                <div class="h-4 rounded bg-indigo-600/35 border border-indigo-400/40 px-2 flex items-center text-indigo-200 truncate">LinkedIn Product Launch</div>
+                <div class="h-4 rounded bg-cyan-600/30 border border-cyan-400/40 px-2 flex items-center text-cyan-200 truncate">X Thread: AI Workflows</div>
+                <div class="h-4 rounded bg-purple-600/35 border border-purple-400/40 px-2 flex items-center text-purple-200 truncate">Instagram Reel Batch</div>
+              </div>
+            </div>
+            <div class="col-span-5 space-y-2">
+              <div class="sub-box rounded-lg p-2 space-y-1 text-[9px]">
+                <p class="text-slate-400 font-semibold">Upcoming Posts</p>
+                <div class="flex justify-between text-slate-200"><span>LinkedIn</span><span class="text-cyan-300">10:00 AM</span></div>
+                <div class="flex justify-between text-slate-200"><span>X / Twitter</span><span class="text-indigo-300">02:30 PM</span></div>
+                <div class="flex justify-between text-slate-200"><span>Instagram</span><span class="text-purple-300">06:00 PM</span></div>
+              </div>
+              <div class="sub-box rounded-lg p-1.5" style="width:100%;height:60px;position:relative;"><canvas id="chartSocial"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Storefront Orders -->
+        <section id="mod-Storefront" class="module-card rounded-xl p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold text-white">Storefront Orders</h2>
+            <span class="text-[10px] text-emerald-400 font-semibold">96% Fulfilled</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[9.5px]">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-800">
+                  <th class="pb-1">Order</th>
+                  <th class="pb-1">Customer</th>
+                  <th class="pb-1">Total</th>
+                  <th class="pb-1">Status</th>
+                  <th class="pb-1 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody" class="divide-y divide-slate-800/70"></tbody>
+            </table>
+          </div>
+          <div class="grid grid-cols-12 gap-2 items-center pt-1">
+            <div class="col-span-5 space-y-1">
+              <div class="flex justify-between text-[9.5px]">
+                <span class="text-slate-400">Fulfillment Rate</span>
+                <span class="font-bold text-white">96%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="fulfillment-fill h-full w-[96%] rounded-full"></div>
+              </div>
+            </div>
+            <div class="col-span-7" style="width:100%;height:48px;position:relative;"><canvas id="chartOrders"></canvas></div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Right Sidebar: AI Assistant "Aura" -->
+      <aside class="xl:col-span-3 aura-panel rounded-xl p-3.5 flex flex-col justify-between space-y-3">
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-extrabold text-white">AI Assistant - "Aura"</h2>
+            <span class="px-2 py-0.5 rounded-full bg-white/15 text-[9px] font-semibold text-cyan-200">Online</span>
+          </div>
+          <div class="flex flex-col items-center py-1">
+            <div class="aura-avatar-ring">
+              <div class="w-11 h-11 rounded-full bg-slate-950 flex items-center justify-center text-xl">🤖</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-1 bg-black/30 p-1 rounded-lg text-[10px] font-bold">
+            <button type="button" onclick="setAuraTab('Chat')" id="btnChat" class="py-1 rounded-md bg-white/15 text-white">Chat</button>
+            <button type="button" onclick="setAuraTab('Insights')" id="btnInsights" class="py-1 rounded-md text-slate-300">Insights</button>
+          </div>
+          <div id="auraFeed" class="space-y-2 max-h-64 overflow-y-auto pr-1 text-[10px]"></div>
+          <form onsubmit="sendAura(event)" class="flex gap-1.5">
+            <input id="auraInput" type="text" placeholder="Ask Aura..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-950/70 border border-white/20 text-[11px] text-white placeholder-slate-400 focus:outline-none" />
+            <button type="submit" class="px-3 py-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-[11px]">Send</button>
+          </form>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-white/15">
+          <p class="text-[11px] font-extrabold text-white">Quick Actions</p>
+          <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+            <button type="button" onclick="quickAct('📅 Schedule Meeting')" class="p-2 rounded-lg bg-slate-950/60 hover:bg-slate-950/85 border border-white/15 text-left text-white font-semibold truncate">📅 Schedule Meeting</button>
+            <button type="button" onclick="quickAct('📊 Generate Report')" class="p-2 rounded-lg bg-slate-950/60 hover:bg-slate-950/85 border border-white/15 text-left text-white font-semibold truncate">📊 Generate Report</button>
+            <button type="button" onclick="quickAct('📈 Analyze Pipeline')" class="p-2 rounded-lg bg-slate-950/60 hover:bg-slate-950/85 border border-white/15 text-left text-white font-semibold truncate">📈 Analyze Pipeline</button>
+            <button type="button" onclick="quickAct('✉️ Draft Email')" class="p-2 rounded-lg bg-slate-950/60 hover:bg-slate-950/85 border border-white/15 text-left text-white font-semibold truncate">✉️ Draft Email</button>
+          </div>
+          <div class="p-2 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-between text-[10px]">
+            <span class="text-slate-200 font-semibold">AI System Status</span>
+            <span class="text-emerald-300 font-bold">● Active & Learning</span>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Ticket Modal -->
+  <div id="ticketModal" class="hidden fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+    <div class="module-card rounded-2xl w-full max-w-md p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 id="ticketModalTitle" class="text-sm font-bold text-white">Add Support Ticket</h3>
+        <button type="button" onclick="closeModal('ticketModal')" class="text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+      <form onsubmit="saveTicket(event)" class="space-y-2.5 text-xs">
+        <input id="tIdx" type="hidden" value="-1" />
+        <div>
+          <label class="block text-slate-400 mb-1">Customer</label>
+          <input id="tCust" type="text" required class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-400 mb-1">Priority</label>
+            <select id="tPrio" class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Status</label>
+            <select id="tStat" class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white">
+              <option value="Open">Open</option>
+              <option value="Pending">Pending</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('ticketModal')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+    <div class="module-card rounded-2xl w-full max-w-md p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white">Edit Storefront Order</h3>
+        <button type="button" onclick="closeModal('orderModal')" class="text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+      <form onsubmit="saveOrder(event)" class="space-y-2.5 text-xs">
+        <input id="oIdx" type="hidden" value="-1" />
+        <div>
+          <label class="block text-slate-400 mb-1">Customer</label>
+          <input id="oCust" type="text" required class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-400 mb-1">Total</label>
+            <input id="oTotal" type="text" required class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Status</label>
+            <select id="oStat" class="w-full px-3 py-2 rounded-lg bg-[#111529] border border-slate-700 text-white">
+              <option value="Shipped">Shipped</option>
+              <option value="Processing">Processing</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('orderModal')" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-semibold">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Data Modal -->
+  <div id="dataModal" class="hidden fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4">
+    <div class="module-card rounded-2xl w-full max-w-xl p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white">Saved Workspace Data (JSON)</h3>
+        <button type="button" onclick="closeModal('dataModal')" class="text-slate-400 hover:text-white text-xs">✕</button>
+      </div>
+      <pre id="jsonBox" class="sub-box rounded-xl p-3 text-[10px] text-cyan-200 max-h-72 overflow-auto"></pre>
+    </div>
+  </div>
+
+  <script>
+    const KEY = 'unify_suite_standalone_v1';
+    const DEFAULT_STATE = {
+      tab: 'Dashboard',
+      tickets: [
+        { id: '#4092', customer: 'Acme Corp', priority: 'High', status: 'Open' },
+        { id: '#4091', customer: 'Nova Labs', priority: 'Medium', status: 'Pending' },
+        { id: '#4089', customer: 'Vertex AI', priority: 'Low', status: 'Resolved' },
+        { id: '#4085', customer: 'Kinetix', priority: 'High', status: 'Open' }
+      ],
+      orders: [
+        { id: '#ORD-901', customer: 'Liam Carter', total: '$249.00', status: 'Shipped' },
+        { id: '#ORD-900', customer: 'Aria Brooks', total: '$158.00', status: 'Processing' },
+        { id: '#ORD-899', customer: 'Noah Patel', total: '$590.00', status: 'Delivered' }
+      ],
+      messages: [
+        { sender: 'You', text: 'Show pending customer escalations & pipeline risk.', user: true },
+        { sender: 'Aura', text: '2 high-priority tickets (#4092, #4085) are active; Q3 revenue is pacing +18%.', user: false }
+      ]
+    };
+
+    let state = (() => {
+      try {
+        const s = localStorage.getItem(KEY);
+        return s ? { ...JSON.parse(JSON.stringify(DEFAULT_STATE)), ...JSON.parse(s) } : JSON.parse(JSON.stringify(DEFAULT_STATE));
+      } catch {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    })();
+
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function openDataModal() {
+      document.getElementById('jsonBox').textContent = JSON.stringify(state, null, 2);
+      document.getElementById('dataModal').classList.remove('hidden');
+    }
+
+    function resetAll() {
+      localStorage.removeItem(KEY);
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      save();
+      renderAll();
+    }
+
+    function renderStaticPanels() {
+      const stages = [
+        { t: 'New Candidates', p: [{ n: 'Sophia Chen', r: 'Sr. Frontend', b: 'S', c: 'bg-indigo-500/30 text-indigo-200' }, { n: 'David Kim', r: 'Growth Lead', b: 'D', c: 'bg-cyan-500/30 text-cyan-200' }] },
+        { t: 'Screening', p: [{ n: 'Maya Patel', r: 'Data Analyst', b: 'M', c: 'bg-amber-500/30 text-amber-200' }, { n: 'Liam Vance', r: 'Backend Eng', b: 'L', c: 'bg-emerald-500/30 text-emerald-200' }] },
+        { t: 'Interview', p: [{ n: 'Elena Rostova', r: 'Design Ops', b: 'E', c: 'bg-purple-500/30 text-purple-200' }, { n: 'Noah Brooks', r: 'Account Exec', b: 'N', c: 'bg-rose-500/30 text-rose-200' }] },
+        { t: 'Offer', p: [{ n: 'Chloe Park', r: 'Product Mgr', b: 'C', c: 'bg-indigo-500/40 text-white' }] },
+        { t: 'Hired', p: [{ n: 'Owen Miller', r: 'DevOps Lead', b: 'O', c: 'bg-emerald-500/40 text-white' }] }
+      ];
+      document.getElementById('hiringGrid').innerHTML = stages.map(s => `
+        <div class="min-w-0">
+          <p class="text-[8.5px] text-slate-400 font-semibold mb-1 truncate">${s.t}</p>
+          <div class="space-y-1">
+            ${s.p.map(x => `
+              <div class="sub-box rounded-lg p-1">
+                <div class="flex items-center gap-1 min-w-0">
+                  <span class="w-3.5 h-3.5 rounded-full ${x.c} text-[8px] font-bold flex items-center justify-center shrink-0">${x.b}</span>
+                  <span class="font-semibold text-white text-[8.5px] truncate">${x.n}</span>
+                </div>
+                <p class="text-[8px] text-slate-400 truncate mt-0.5">${x.r}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      const crm = [
+        { l: 'Leads', v: '148', c: 'text-white' },
+        { l: 'Qualified', v: '64', c: 'text-cyan-300' },
+        { l: 'Proposal', v: '29', c: 'text-indigo-300' },
+        { l: 'Negotiate', v: '12', c: 'text-amber-300' },
+        { l: 'Closed Won', v: '19', c: 'text-emerald-400' }
+      ];
+      document.getElementById('crmCounters').innerHTML = crm.map(i => `
+        <div class="sub-box rounded-lg p-1">
+          <p class="text-[8px] text-slate-400 truncate">${i.l}</p>
+          <p class="text-[11px] font-bold ${i.c}">${i.v}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderTables() {
+      const q = (document.getElementById('globalSearch').value || '').toLowerCase().trim();
+      const tickets = state.tickets.map((t, i) => ({ ...t, i })).filter(t => !q || t.id.toLowerCase().includes(q) || t.customer.toLowerCase().includes(q) || t.status.toLowerCase().includes(q));
+      document.getElementById('ticketsBody').innerHTML = tickets.map(t => {
+        const pc = t.priority === 'High' ? 'text-rose-400' : t.priority === 'Medium' ? 'text-amber-300' : 'text-emerald-400';
+        const sb = t.status === 'Open' ? 'bg-amber-500/20 text-amber-300' : t.status === 'Pending' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-emerald-500/20 text-emerald-300';
+        return `
+          <tr>
+            <td class="py-1 font-semibold ${pc} whitespace-nowrap">${t.id}</td>
+            <td class="py-1 text-slate-200 truncate max-w-[72px]">${t.customer}</td>
+            <td class="py-1 whitespace-nowrap"><span class="px-1.5 py-0.5 rounded ${sb} text-[8px]">${t.status}</span></td>
+            <td class="py-1 text-right whitespace-nowrap">
+              <button type="button" onclick="openEditTicket(${t.i})" class="act-btn bg-indigo-500/30 text-indigo-200">Edit</button>
+              <button type="button" onclick="delTicket(${t.i})" class="act-btn bg-rose-500/30 text-rose-300">Del</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const orders = state.orders.map((o, i) => ({ ...o, i })).filter(o => !q || o.id.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q) || o.status.toLowerCase().includes(q));
+      document.getElementById('ordersBody').innerHTML = orders.map(o => {
+        const sb = o.status === 'Processing' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300';
+        return `
+          <tr>
+            <td class="py-1 text-cyan-300 font-semibold whitespace-nowrap">${o.id}</td>
+            <td class="py-1 text-white truncate max-w-[68px]">${o.customer}</td>
+            <td class="py-1 text-slate-200 whitespace-nowrap">${o.total}</td>
+            <td class="py-1 whitespace-nowrap"><span class="px-1.5 py-0.5 rounded ${sb} text-[8px]">${o.status}</span></td>
+            <td class="py-1 text-right whitespace-nowrap">
+              <button type="button" onclick="openEditOrder(${o.i})" class="act-btn bg-indigo-500/30 text-indigo-200">Edit</button>
+              <button type="button" onclick="delOrder(${o.i})" class="act-btn bg-rose-500/30 text-rose-300">Del</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAura() {
+      const feed = document.getElementById('auraFeed');
+      feed.innerHTML = state.messages.map(m => `
+        <div class="p-2 rounded-lg border ${m.user ? 'bg-slate-950/65 border-white/10 text-slate-200' : 'bg-indigo-950/75 border-indigo-300/25 text-slate-100'}">
+          <span class="font-bold ${m.user ? 'text-cyan-300' : 'text-indigo-300'} block mb-0.5">${m.sender}</span>
+          ${m.text}
+        </div>
+      `).join('');
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function openAddTicket() {
+      document.getElementById('ticketModalTitle').textContent = 'Add Support Ticket';
+      document.getElementById('tIdx').value = '-1';
+      document.getElementById('tCust').value = '';
+      document.getElementById('tPrio').value = 'Medium';
+      document.getElementById('tStat').value = 'Open';
+      document.getElementById('ticketModal').classList.remove('hidden');
+    }
+
+    function openEditTicket(i) {
+      const t = state.tickets[i];
+      document.getElementById('ticketModalTitle').textContent = 'Edit Ticket ' + t.id;
+      document.getElementById('tIdx').value = i;
+      document.getElementById('tCust').value = t.customer;
+      document.getElementById('tPrio').value = t.priority;
+      document.getElementById('tStat').value = t.status;
+      document.getElementById('ticketModal').classList.remove('hidden');
+    }
+
+    function saveTicket(e) {
+      e.preventDefault();
+      const idx = Number(document.getElementById('tIdx').value);
+      const item = {
+        id: idx >= 0 ? state.tickets[idx].id : '#' + Math.floor(4093 + Math.random() * 90),
+        customer: document.getElementById('tCust').value.trim(),
+        priority: document.getElementById('tPrio').value,
+        status: document.getElementById('tStat').value
+      };
+      if (idx >= 0) state.tickets[idx] = item;
+      else state.tickets.unshift(item);
+      save();
+      renderTables();
+      closeModal('ticketModal');
+    }
+
+    function delTicket(i) {
+      state.tickets.splice(i, 1);
+      save();
+      renderTables();
+    }
+
+    function openEditOrder(i) {
+      const o = state.orders[i];
+      document.getElementById('oIdx').value = i;
+      document.getElementById('oCust').value = o.customer;
+      document.getElementById('oTotal').value = o.total;
+      document.getElementById('oStat').value = o.status;
+      document.getElementById('orderModal').classList.remove('hidden');
+    }
+
+    function saveOrder(e) {
+      e.preventDefault();
+      const idx = Number(document.getElementById('oIdx').value);
+      state.orders[idx] = {
+        ...state.orders[idx],
+        customer: document.getElementById('oCust').value.trim(),
+        total: document.getElementById('oTotal').value.trim(),
+        status: document.getElementById('oStat').value
+      };
+      save();
+      renderTables();
+      closeModal('orderModal');
+    }
+
+    function delOrder(i) {
+      state.orders.splice(i, 1);
+      save();
+      renderTables();
+    }
+
+    function sendAura(e) {
+      e.preventDefault();
+      const inp = document.getElementById('auraInput');
+      const v = inp.value.trim();
+      if (!v) return;
+      inp.value = '';
+      state.messages.push({ sender: 'You', text: v, user: true });
+      state.messages.push({ sender: 'Aura', text: `Live status: $2.4M pipeline, ${state.tickets.length} tickets, and ${state.orders.length} orders active.`, user: false });
+      save();
+      renderAura();
+    }
+
+    function quickAct(label) {
+      state.messages.push({ sender: 'You', text: label, user: true });
+      state.messages.push({ sender: 'Aura', text: `${label} executed successfully.`, user: false });
+      save();
+      renderAura();
+    }
+
+    function setAuraTab(t) {
+      document.getElementById('btnChat').className = t === 'Chat' ? 'py-1 rounded-md bg-white/15 text-white' : 'py-1 rounded-md text-slate-300';
+      document.getElementById('btnInsights').className = t === 'Insights' ? 'py-1 rounded-md bg-white/15 text-white' : 'py-1 rounded-md text-slate-300';
+      if (t === 'Insights') quickAct('⚡ AI Performance Summary');
+    }
+
+    function applyTab(tab) {
+      state.tab = tab;
+      save();
+      document.querySelectorAll('#topNav .nav-btn').forEach(b => {
+        b.className = b.dataset.tab === tab ? 'nav-btn nav-btn-active px-3 py-1 rounded-md' : 'nav-btn px-2.5 py-1 rounded-md text-slate-400 hover:text-white';
+      });
+      document.getElementById('activeViewLabel').textContent = 'View: ' + tab;
+      const map = { Hiring: 'mod-Hiring', CRM: 'mod-CRM', Support: 'mod-Support', Analytics: 'mod-Analytics', Social: 'mod-Social', Storefront: 'mod-Storefront' };
+      const target = map[tab] || null;
+      document.querySelectorAll('.module-card').forEach(c => {
+        c.classList.remove('module-focused', 'module-dimmed');
+        if (target) c.classList.add(c.id === target ? 'module-focused' : 'module-dimmed');
+      });
+    }
+
+    function buildCharts() {
+      if (typeof Chart === 'undefined') return;
+      const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+      new Chart(document.getElementById('chartHiring'), {
+        type: 'line',
+        data: { labels: ['1','2','3','4','5','6'], datasets: [{ data: [18,25,22,33,40,48], borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.15)', fill: true, borderWidth: 2, pointRadius: 0, tension: 0.4 }] },
+        options: { ...opt, scales: { x: { display: false }, y: { display: false } } }
+      });
+
+      new Chart(document.getElementById('chartGoal'), {
+        type: 'doughnut',
+        data: { labels: ['Done','Left'], datasets: [{ data: [76,24], backgroundColor: ['#22d3ee','#1e293b'], borderWidth: 0, cutout: '72%' }] },
+        options: opt
+      });
+
+      new Chart(document.getElementById('chartDeals'), {
+        type: 'bar',
+        data: { labels: ['L','Q','P','N','W'], datasets: [{ data: [45,32,24,15,19], backgroundColor: ['#6366f1','#38bdf8','#a855f7','#f59e0b','#10b981'], borderRadius: 4 }] },
+        options: { ...opt, scales: { x: { ticks: { color: '#94a3b8', font: { size: 8 } }, grid: { display: false } }, y: { display: false } } }
+      });
+
+      new Chart(document.getElementById('chartTickets'), {
+        type: 'doughnut',
+        data: { labels: ['Billing','Tech','Onboarding','Other'], datasets: [{ data: [38,29,21,12], backgroundColor: ['#38bdf8','#818cf8','#10b981','#f59e0b'], borderWidth: 0, cutout: '68%' }] },
+        options: opt
+      });
+
+      const w = [35,62,82,46,92,70,52,86,42,66,95,56,76,46,88,62,48,78,52,82,66,44,72,58,84,49,68,42];
+      new Chart(document.getElementById('chartWave'), {
+        type: 'bar',
+        data: { labels: w.map((_, i) => i), datasets: [{ data: w, backgroundColor: w.map((_, i) => i % 2 === 0 ? '#22d3ee' : '#818cf8'), borderRadius: 2 }] },
+        options: { ...opt, scales: { x: { display: false }, y: { display: false } } }
+      });
+
+      new Chart(document.getElementById('chartCall'), {
+        type: 'line',
+        data: { labels: ['M','T','W','T','F'], datasets: [{ data: [7.8,8.1,8.0,8.4,8.5], borderColor: '#34d399', borderWidth: 2, pointRadius: 0, tension: 0.35 }] },
+        options: { ...opt, scales: { x: { display: false }, y: { display: false } } }
+      });
+
+      new Chart(document.getElementById('chartSocial'), {
+        type: 'bar',
+        data: { labels: ['LI','X','IG','YT'], datasets: [{ data: [64,82,71,53], backgroundColor: ['#38bdf8','#818cf8','#c084fc','#34d399'], borderRadius: 4 }] },
+        options: { ...opt, scales: { x: { ticks: { color: '#94a3b8', font: { size: 8 } }, grid: { display: false } }, y: { display: false } } }
+      });
+
+      new Chart(document.getElementById('chartOrders'), {
+        type: 'line',
+        data: { labels: ['1','2','3','4','5','6','7'], datasets: [{ data: [120,145,138,175,162,198,214], borderColor: '#22d3ee', backgroundColor: 'rgba(34,211,238,0.14)', fill: true, borderWidth: 2, pointRadius: 0, tension: 0.4 }] },
+        options: { ...opt, scales: { x: { display: false }, y: { display: false } } }
+      });
+    }
+
+    function renderAll() {
+      renderStaticPanels();
+      renderTables();
+      renderAura();
+      applyTab(state.tab || 'Dashboard');
+    }
+
+    document.querySelectorAll('#topNav .nav-btn').forEach(b => b.addEventListener('click', () => applyTab(b.dataset.tab)));
+    document.getElementById('globalSearch').addEventListener('input', renderTables);
+    window.addEventListener('load', () => {
+      renderAll();
+      buildCharts();
+    });
+  </script>
+</body>
+</html>

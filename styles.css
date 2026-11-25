@@ -1,0 +1,175 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at 18% 0%, #1b163a 0%, #0b0d19 46%, #070811 100%);
+  color: #E2E8F0;
+  min-height: 100vh;
+}
+
+.suite-shell {
+  background: rgba(15, 18, 34, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.78);
+}
+
+.top-bar {
+  background: rgba(18, 22, 43, 0.96);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.85);
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #22d3ee 100%);
+}
+
+.nav-btn {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.nav-btn-active {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.search-input {
+  background: #1b203c;
+  border: 1px solid rgba(71, 85, 105, 0.8);
+}
+
+.search-input:focus {
+  border-color: #818cf8;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 6px;
+  color: #94a3b8;
+}
+
+.ai-strip {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.25) 0%, rgba(15, 118, 110, 0.22) 50%, rgba(79, 70, 229, 0.25) 100%);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.module-card {
+  background: linear-gradient(180deg, rgba(23, 27, 49, 0.92) 0%, rgba(16, 19, 36, 0.96) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.module-focused {
+  border-color: rgba(34, 211, 238, 0.75) !important;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.45), 0 14px 36px rgba(79, 70, 229, 0.25);
+}
+
+.module-dimmed {
+  opacity: 0.45;
+}
+
+.stage-heading {
+  font-size: 8.5px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.sub-box {
+  background: #111529;
+  border: 1px solid rgba(30, 41, 59, 0.95);
+}
+
+/* Explicit Chart Containers so Chart.js always renders reliably */
+.chart-wrap-spark {
+  position: relative;
+  width: 150px;
+  height: 44px;
+  min-width: 120px;
+}
+
+.chart-wrap-donut {
+  position: relative;
+  width: 84px;
+  height: 84px;
+}
+
+.chart-wrap-bar {
+  position: relative;
+  width: 100%;
+  height: 102px;
+}
+
+.chart-wrap-wave {
+  position: relative;
+  width: 100%;
+  height: 58px;
+}
+
+.chart-wrap-mini {
+  position: relative;
+  width: 100%;
+  height: 46px;
+}
+
+.chart-wrap-social {
+  position: relative;
+  width: 100%;
+  height: 62px;
+}
+
+.chart-wrap-line {
+  position: relative;
+  width: 100%;
+  height: 48px;
+}
+
+.call-insight {
+  background: rgba(30, 27, 75, 0.45);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+}
+
+.fulfillment-fill {
+  background: linear-gradient(90deg, #6366f1 0%, #22d3ee 55%, #34d399 100%);
+}
+
+.aura-panel {
+  background: linear-gradient(180deg, #4f46e5 0%, #3730a3 28%, #162a3a 65%, #111827 100%);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
+.aura-avatar-ring {
+  background: linear-gradient(135deg, #38bdf8, #a855f7, #ec4899);
+  padding: 2px;
+  border-radius: 9999px;
+}
+
+.row-action-btn {
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 9999px;
+}
